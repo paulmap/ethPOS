@@ -46,3 +46,6 @@ app.*.map.json
 
 # development history tracking
 /history
+
+# packaged APK builds (too large for version control)
+/apk-versions/
