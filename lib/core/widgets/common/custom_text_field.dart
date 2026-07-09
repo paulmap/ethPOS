@@ -8,6 +8,8 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final int? maxLines;
+  final bool readOnly;
+  final String? helperText;
 
   const CustomTextField({
     super.key,
@@ -18,6 +20,8 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.validator,
     this.maxLines = 1,
+    this.readOnly = false,
+    this.helperText,
   });
 
   @override
@@ -29,10 +33,16 @@ class CustomTextField extends StatelessWidget {
         keyboardType: keyboardType,
         validator: validator,
         maxLines: maxLines,
+        readOnly: readOnly,
+        style: readOnly ? TextStyle(color: Theme.of(context).disabledColor) : null,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
           suffixIcon: suffixIcon,
+          helperText: helperText,
+          helperMaxLines: 2,
+          filled: readOnly,
+          fillColor: readOnly ? Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3) : null,
         ),
       ),
     );

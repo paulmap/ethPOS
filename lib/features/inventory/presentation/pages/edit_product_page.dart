@@ -110,9 +110,10 @@ class _EditProductPageState extends State<EditProductPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.product != null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.product == null ? 'Add Product' : 'Edit Product'),
+        title: Text(isEditing ? 'Edit Product' : 'Add Product'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -136,6 +137,8 @@ class _EditProductPageState extends State<EditProductPage> {
                       controller: _priceController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       validator: (v) => double.tryParse(v!) == null ? 'Invalid' : null,
+                      readOnly: isEditing,
+                      helperText: isEditing ? 'Change from Price List (Admin PIN)' : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -143,9 +146,10 @@ class _EditProductPageState extends State<EditProductPage> {
                     flex: 1,
                       child: DropdownButtonFormField<String>(
                       initialValue: _selectedCurrency,
+                      isExpanded: true,
                       decoration: const InputDecoration(labelText: 'Currency'),
                       items: _currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-                      onChanged: (v) => setState(() => _selectedCurrency = v!),
+                      onChanged: isEditing ? null : (v) => setState(() => _selectedCurrency = v!),
                     ),
                   ),
                 ],
@@ -156,6 +160,8 @@ class _EditProductPageState extends State<EditProductPage> {
                 controller: _stockController,
                 keyboardType: TextInputType.number,
                 validator: (v) => int.tryParse(v!) == null ? 'Invalid' : null,
+                readOnly: isEditing,
+                helperText: isEditing ? 'Adjust via New Stock (Receive)' : null,
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -211,6 +217,8 @@ class _EditProductPageState extends State<EditProductPage> {
                       label: 'Cost Price',
                       controller: _costPriceController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      readOnly: isEditing,
+                      helperText: isEditing ? 'Set via New Stock (Receive)' : null,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -219,13 +227,15 @@ class _EditProductPageState extends State<EditProductPage> {
                       label: 'Markup %',
                       controller: _markupController,
                       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      readOnly: isEditing,
+                      helperText: isEditing ? 'Change from Price List (Admin PIN)' : null,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 32),
               CustomButton(
-                text: widget.product == null ? 'Create Product' : 'Save Changes',
+                text: isEditing ? 'Save Changes' : 'Create Product',
                 onPressed: _save,
               ),
             ],
