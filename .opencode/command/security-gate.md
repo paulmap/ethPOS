@@ -1,0 +1,18 @@
+---
+description: Enforce minimum security criteria before iteration close or release
+model: anthropic/claude-sonnet-4-20250514
+subtask: true
+---
+
+# Security Gate (SDLC)
+
+## Criteria
+
+- Approved threat model with mitigations or accepted risks
+- Zero open critical vulnerabilities; highs triaged with owners/dates
+- SBOM generated and reviewed (if applicable)
+- Secrets policy verified; no hardcoded secrets
+
+## Output
+
+- `security-gate-report.md` with pass/fail and remediation tasks
