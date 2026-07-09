@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../providers/inventory_provider.dart';
 import '../../../../core/storage/models/local_product.dart';
+import '../../../../core/widgets/common/scanner/barcode_scanner_widget.dart';
 
 class NewProductPage extends StatefulWidget {
   const NewProductPage({super.key});
@@ -19,6 +20,20 @@ class _NewProductPageState extends State<NewProductPage> {
   final _categoryController = TextEditingController();
   final _upcController = TextEditingController();
   final _descriptionController = TextEditingController();
+
+  Future<void> _scanBarcode() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (scannerCtx) => BarcodeScannerWidget(
+          onDetect: (code) {
+            _upcController.text = code;
+            Navigator.pop(scannerCtx);
+          },
+        ),
+      ),
+    );
+  }
 
   void _saveProduct() {
     if (_formKey.currentState!.validate()) {
@@ -57,7 +72,16 @@ class _NewProductPageState extends State<NewProductPage> {
               _buildTextField('Product Description / Name', _nameController, Icons.description),
               _buildTextField('SKU', _skuController, Icons.inventory_2),
               _buildTextField('Category', _categoryController, Icons.category),
-              _buildTextField('UPC Barcode (Optional)', _upcController, Icons.qr_code_scanner),
+              _buildTextField(
+                'UPC Barcode (Optional)',
+                _upcController,
+                Icons.qr_code_scanner,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.camera_alt_outlined),
+                  tooltip: 'Scan barcode',
+                  onPressed: _scanBarcode,
+                ),
+              ),
               _buildTextField('Long Description (Optional)', _descriptionController, Icons.info_outline, maxLines: 3),
               const SizedBox(height: 24),
               SizedBox(
@@ -75,7 +99,7 @@ class _NewProductPageState extends State<NewProductPage> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {int maxLines = 1}) {
+  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {int maxLines = 1, Widget? suffixIcon}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -84,6 +108,7 @@ class _NewProductPageState extends State<NewProductPage> {
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon),
+          suffixIcon: suffixIcon,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
         validator: (value) => value == null || value.isEmpty ? 'Field required' : null,

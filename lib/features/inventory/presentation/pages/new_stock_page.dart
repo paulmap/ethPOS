@@ -4,6 +4,7 @@ import '../providers/inventory_provider.dart';
 import '../../../suppliers/presentation/providers/supplier_provider.dart';
 import '../../../../core/storage/models/local_product.dart';
 import '../../../../core/storage/models/local_supplier.dart';
+import '../../../../core/widgets/common/scanner/barcode_scanner_widget.dart';
 import 'package:intl/intl.dart';
 
 class NewStockPage extends StatefulWidget {
@@ -25,6 +26,37 @@ class _NewStockPageState extends State<NewStockPage> {
   final _reorderLevelController = TextEditingController();
   String _selectedCurrency = 'USD';
   final List<String> _currencies = ['USD', 'ZWL', 'ZAR', 'BP'];
+
+  void _selectProduct(LocalProduct product) {
+    setState(() {
+      _selectedProduct = product;
+      _costController.text = product.effectiveCostPrice.toString();
+      _minStockController.text = product.effectiveMinStock.toString();
+      _reorderLevelController.text = product.effectiveReorderLevel.toString();
+    });
+  }
+
+  Future<void> _scanBarcode() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (scannerCtx) => BarcodeScannerWidget(
+          onDetect: (code) {
+            final inventory = scannerCtx.read<InventoryProvider>();
+            final product = inventory.products.where((p) => p.barcode == code).firstOrNull;
+            Navigator.pop(scannerCtx);
+            if (product != null) {
+              _selectProduct(product);
+            } else if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Unknown barcode: $code'), backgroundColor: Colors.orange),
+              );
+            }
+          },
+        ),
+      ),
+    );
+  }
 
   void _saveStock() {
     if (_formKey.currentState!.validate() && _selectedProduct != null) {
@@ -106,29 +138,35 @@ class _NewStockPageState extends State<NewStockPage> {
   Widget _buildProductSelector() {
     return Consumer<InventoryProvider>(
       builder: (context, provider, _) {
-        return DropdownButtonFormField<LocalProduct>(
-          initialValue: _selectedProduct,
-          decoration: InputDecoration(
-            labelText: 'Select Product',
-            prefixIcon: const Icon(Icons.inventory_2),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-          isExpanded: true,
-          items: provider.products.map((p) => DropdownMenuItem(
-            value: p,
-            child: Text(p.name),
-          )).toList(),
-          onChanged: (val) {
-             setState(() {
-               _selectedProduct = val;
-               if (val != null) {
-                 _costController.text = val.effectiveCostPrice.toString();
-                 _minStockController.text = val.effectiveMinStock.toString();
-                 _reorderLevelController.text = val.effectiveReorderLevel.toString();
-               }
-             });
-          },
-          validator: (val) => val == null ? 'Select a product' : null,
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<LocalProduct>(
+                initialValue: _selectedProduct,
+                decoration: InputDecoration(
+                  labelText: 'Select Product',
+                  prefixIcon: const Icon(Icons.inventory_2),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                isExpanded: true,
+                items: provider.products.map((p) => DropdownMenuItem(
+                  value: p,
+                  child: Text(p.name),
+                )).toList(),
+                onChanged: (val) {
+                  if (val != null) _selectProduct(val);
+                },
+                validator: (val) => val == null ? 'Select a product' : null,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton.filledTonal(
+              icon: const Icon(Icons.camera_alt_outlined),
+              tooltip: 'Scan barcode',
+              onPressed: _scanBarcode,
+            ),
+          ],
         );
       },
     );
