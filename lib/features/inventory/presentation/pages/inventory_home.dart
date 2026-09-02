@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../../core/themes/colors.dart';
+import '../../../../core/widgets/pos/pos_bits.dart';
+import '../../../../core/widgets/pos/pos_scaffold.dart';
 import 'new_product_page.dart';
 import 'new_stock_page.dart';
 import 'price_list_page.dart';
@@ -9,73 +12,74 @@ class InventoryHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Inventory Management'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          children: [
-            _buildInventoryCard(
-              context,
-              'New Product',
-              Icons.add_box_outlined,
-              Colors.blue,
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewProductPage())),
-            ),
-            _buildInventoryCard(
-              context,
-              'New Stock',
-              Icons.inventory,
-              Colors.green,
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewStockPage())),
-            ),
-            _buildInventoryCard(
-              context,
-              'Price List',
-              Icons.list_alt,
-              Colors.orange,
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PriceListPage())),
-            ),
-            _buildInventoryCard(
-              context,
-              'Stock',
-              Icons.bar_chart,
-              Colors.purple,
-              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StockStatusPage())),
-            ),
-          ],
+    return PosScaffold(
+      title: 'Inventory',
+      subtitle: 'Manage products and stock',
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(18, 0, 18, 8),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _Tile(
+                label: 'New Product',
+                icon: Icons.add_box_outlined,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewProductPage())),
+              ),
+              const SizedBox(height: 12),
+              _Tile(
+                label: 'New Stock',
+                icon: Icons.inventory,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewStockPage())),
+              ),
+              const SizedBox(height: 12),
+              _Tile(
+                label: 'Price List',
+                icon: Icons.list_alt,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PriceListPage())),
+              ),
+              const SizedBox(height: 12),
+              _Tile(
+                label: 'Stock Status',
+                icon: Icons.bar_chart,
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StockStatusPage())),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildInventoryCard(BuildContext context, String title, IconData icon, Color color, VoidCallback onTap) {
-    return InkWell(
+class _Tile extends StatelessWidget {
+  const _Tile({required this.label, required this.icon, required this.onTap});
+
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return PaperCard(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: color),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+      padding: const EdgeInsets.all(17),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 19, color: AppColors.ink),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              height: 1.2,
+              color: AppColors.ink,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

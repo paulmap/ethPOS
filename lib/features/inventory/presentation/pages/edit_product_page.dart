@@ -26,7 +26,6 @@ class _EditProductPageState extends State<EditProductPage> {
   late TextEditingController _skuController;
   late TextEditingController _categoryController;
   late TextEditingController _descriptionController;
-  late TextEditingController _productCodeController;
   late TextEditingController _minStockController;
   late TextEditingController _reorderLevelController;
   late TextEditingController _costPriceController;
@@ -49,7 +48,6 @@ class _EditProductPageState extends State<EditProductPage> {
     _skuController = TextEditingController(text: widget.product?.sku ?? '');
     _categoryController = TextEditingController(text: widget.product?.category ?? '');
     _descriptionController = TextEditingController(text: widget.product?.description ?? '');
-    _productCodeController = TextEditingController(text: widget.product?.productCode ?? '');
     _minStockController = TextEditingController(text: widget.product?.minStockHolding?.toString() ?? '0');
     _reorderLevelController = TextEditingController(text: widget.product?.reorderLevel?.toString() ?? '5');
     _costPriceController = TextEditingController(text: widget.product?.costPrice?.toString() ?? '0.0');
@@ -69,7 +67,6 @@ class _EditProductPageState extends State<EditProductPage> {
     _skuController.dispose();
     _categoryController.dispose();
     _descriptionController.dispose();
-    _productCodeController.dispose();
     _minStockController.dispose();
     _reorderLevelController.dispose();
     _costPriceController.dispose();
@@ -99,7 +96,6 @@ class _EditProductPageState extends State<EditProductPage> {
         price: double.parse(_priceController.text),
         currentStock: int.parse(_stockController.text),
         barcode: _barcodeController.text.isEmpty ? null : _barcodeController.text,
-        productCode: _productCodeController.text,
         sku: _skuController.text,
         category: _categoryController.text,
         description: _descriptionController.text,
@@ -241,11 +237,6 @@ class _EditProductPageState extends State<EditProductPage> {
               CustomTextField(
                 label: 'Category',
                 controller: _categoryController,
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                label: 'Product Code',
-                controller: _productCodeController,
               ),
               const SizedBox(height: 16),
               CustomTextField(

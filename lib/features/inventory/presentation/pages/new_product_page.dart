@@ -14,7 +14,6 @@ class NewProductPage extends StatefulWidget {
 
 class _NewProductPageState extends State<NewProductPage> {
   final _formKey = GlobalKey<FormState>();
-  final _productCodeController = TextEditingController();
   final _nameController = TextEditingController();
   final _skuController = TextEditingController();
   final _categoryController = TextEditingController();
@@ -49,13 +48,12 @@ class _NewProductPageState extends State<NewProductPage> {
       final product = LocalProduct(
         id: const Uuid().v4(),
         name: _nameController.text,
-        productCode: _productCodeController.text,
         sku: _skuController.text,
         category: _categoryController.text,
         description: _descriptionController.text,
         price: 0.0,
         currentStock: 0,
-        barcode: _upcController.text.isNotEmpty ? _upcController.text : _productCodeController.text,
+        barcode: _upcController.text.isNotEmpty ? _upcController.text : _skuController.text,
         storeArea: _storeAreaController.text.isEmpty ? null : _storeAreaController.text,
         aisle: _aisleController.text.isEmpty ? null : _aisleController.text,
         binShelf: _binShelfController.text.isEmpty ? null : _binShelfController.text,
@@ -81,7 +79,6 @@ class _NewProductPageState extends State<NewProductPage> {
           key: _formKey,
           child: Column(
             children: [
-              _buildTextField('Product Code', _productCodeController, Icons.tag),
               _buildTextField('Product Description / Name', _nameController, Icons.description),
               _buildTextField('SKU', _skuController, Icons.inventory_2),
               _buildTextField('Category', _categoryController, Icons.category),

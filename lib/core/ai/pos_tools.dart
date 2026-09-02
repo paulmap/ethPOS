@@ -95,8 +95,7 @@ class PosTools {
     final matches = products.values.where((p) {
       return p.name.toLowerCase().contains(q) ||
           (p.sku?.toLowerCase() == q) ||
-          (p.barcode == q) ||
-          (p.productCode?.toLowerCase() == q);
+          (p.barcode == q);
     }).take(6);
 
     final rows = matches.map((p) {

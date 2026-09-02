@@ -142,7 +142,7 @@ class LocalProduct extends HiveObject {
   // Getter for non-nullable access in UI
   String get effectiveCurrency => currency ?? 'USD';
   bool get effectiveIsDiscontinued => isDiscontinued ?? false;
-  String get effectiveProductCode => productCode ?? barcode ?? 'N/A';
+  String get effectiveProductCode => sku ?? barcode ?? 'N/A';
   String get effectiveSku => sku ?? 'N/A';
   String get effectiveCategory => category ?? 'General';
   String get effectiveDescription => description ?? name;
