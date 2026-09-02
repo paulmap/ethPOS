@@ -17,34 +17,41 @@ class InventoryHome extends StatelessWidget {
       subtitle: 'Manage products and stock',
       child: Padding(
         padding: const EdgeInsets.fromLTRB(18, 0, 18, 8),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _Tile(
-                label: 'New Product',
-                icon: Icons.add_box_outlined,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewProductPage())),
-              ),
-              const SizedBox(height: 12),
-              _Tile(
-                label: 'New Stock',
-                icon: Icons.inventory,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewStockPage())),
-              ),
-              const SizedBox(height: 12),
-              _Tile(
-                label: 'Price List',
-                icon: Icons.list_alt,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PriceListPage())),
-              ),
-              const SizedBox(height: 12),
-              _Tile(
-                label: 'Stock Status',
-                icon: Icons.bar_chart,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StockStatusPage())),
-              ),
-            ],
-          ),
+        child: GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          children: [
+            _Tile(
+              label: 'New Product',
+              icon: Icons.add_box_outlined,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewProductPage())),
+            ),
+            _Tile(
+              label: 'New Stock',
+              icon: Icons.inventory,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NewStockPage())),
+            ),
+            _Tile(
+              label: 'Price List',
+              icon: Icons.list_alt,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PriceListPage())),
+            ),
+            _Tile(
+              label: 'Stock Status',
+              icon: Icons.bar_chart,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StockStatusPage())),
+            ),
+            _Tile(
+              label: 'Stock Movement',
+              icon: Icons.move_up,
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Stock Movement coming soon')),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
