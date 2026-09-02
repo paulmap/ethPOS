@@ -178,9 +178,9 @@ class _Tile extends StatelessWidget {
       padding: const EdgeInsets.all(17),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(icon, size: 19, color: AppColors.ink),
+          const SizedBox(height: 8),
           Text(
             label,
             maxLines: 2,
