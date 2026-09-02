@@ -46,7 +46,39 @@ class _CashUpPageState extends State<CashUpPage> {
   @override
   Widget build(BuildContext context) {
     final session = context.watch<SessionProvider>();
-    final float = session.openShift?.openingFloat ?? 0;
+    final openShift = session.openShift;
+    final float = openShift?.openingFloat ?? 0;
+
+    if (openShift == null) {
+      return PosScaffold(
+        title: 'Error',
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'No active shift',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'Please open a shift first',
+                  style: TextStyle(fontSize: 14, color: AppColors.muted),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Go back'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     final ready = (double.tryParse(_cash.text) ?? -1) >= 0 &&
         _mobileConfirmed &&
         _cardConfirmed;
@@ -253,7 +285,14 @@ class _CashUpPageState extends State<CashUpPage> {
       mobileMoneyTotal: widget.mobileMoneyTotal,
       cardTotal: widget.cardTotal,
     );
-    if (closed == null) return;
+    if (closed == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No shift to close')),
+        );
+      }
+      return;
+    }
 
     setState(() => _variance = closed.variance);
 
@@ -267,6 +306,14 @@ class _CashUpPageState extends State<CashUpPage> {
               'Till 1 short on $shortfalls of the last '
               '${session.shifts.length} cash-ups. Not shown to the assistant.',
             );
+      }
+    }
+
+    // Navigate back to home after a brief delay to show the variance
+    if (context.mounted) {
+      await Future.delayed(const Duration(seconds: 1));
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed('/home');
       }
     }
   }
