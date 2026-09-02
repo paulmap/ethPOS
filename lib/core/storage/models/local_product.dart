@@ -55,6 +55,18 @@ class LocalProduct extends HiveObject {
   @HiveField(16)
   final double? markup;
 
+  @HiveField(17)
+  final String? storeArea;
+
+  @HiveField(18)
+  final String? aisle;
+
+  @HiveField(19)
+  final String? binShelf;
+
+  @HiveField(20)
+  final List<String>? compatibleTags;
+
   LocalProduct({
     required this.id,
     required this.name,
@@ -71,6 +83,10 @@ class LocalProduct extends HiveObject {
     this.reorderLevel,
     this.costPrice,
     this.markup,
+    this.storeArea,
+    this.aisle,
+    this.binShelf,
+    this.compatibleTags,
     String? currency,
     bool? isDiscontinued,
   })  : currency = currency ?? 'USD',
@@ -91,6 +107,10 @@ class LocalProduct extends HiveObject {
     int? reorderLevel,
     double? costPrice,
     double? markup,
+    String? storeArea,
+    String? aisle,
+    String? binShelf,
+    List<String>? compatibleTags,
     String? currency,
     bool? isDiscontinued,
   }) {
@@ -110,6 +130,10 @@ class LocalProduct extends HiveObject {
       reorderLevel: reorderLevel ?? this.reorderLevel,
       costPrice: costPrice ?? this.costPrice,
       markup: markup ?? this.markup,
+      storeArea: storeArea ?? this.storeArea,
+      aisle: aisle ?? this.aisle,
+      binShelf: binShelf ?? this.binShelf,
+      compatibleTags: compatibleTags ?? this.compatibleTags,
       currency: currency ?? this.currency,
       isDiscontinued: isDiscontinued ?? this.isDiscontinued,
     );
@@ -127,4 +151,17 @@ class LocalProduct extends HiveObject {
   int get effectiveReorderLevel => reorderLevel ?? 5;
   double get effectiveCostPrice => costPrice ?? 0.0;
   double get effectiveMarkup => markup ?? 0.0;
+
+  bool get hasLocation =>
+      (storeArea?.isNotEmpty ?? false) || (aisle?.isNotEmpty ?? false) || (binShelf?.isNotEmpty ?? false);
+
+  /// Combined "Area-Aisle-Bin" display code, e.g. "A-12-B10". Shows only the
+  /// segments that have been set, or "Unassigned" if none have.
+  String get locationCode {
+    final segments = [storeArea, aisle, binShelf].where((s) => s != null && s.isNotEmpty);
+    return segments.isEmpty ? 'Unassigned' : segments.join('-');
+  }
+
+  List<String> get effectiveCompatibleTags => compatibleTags ?? const [];
+  bool get hasCompatibleTags => compatibleTags?.isNotEmpty ?? false;
 }

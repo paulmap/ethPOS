@@ -455,12 +455,25 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           child: Text(provider.selectedCustomerId == null ? 'Select' : 'Change', style: const TextStyle(fontSize: 12)),
                         ),
                         if (provider.selectedCustomerId != null)
-                          IconButton(
-                            icon: const Icon(Icons.card_giftcard, color: Colors.orange, size: 18),
-                            onPressed: () {
+                          Builder(
+                            builder: (context) {
                               final loyalty = context.read<LoyaltyProvider>();
                               final customer = loyalty.customers.firstWhere((c) => c.id == provider.selectedCustomerId);
-                              _showRedeemDialog(context, customer.points);
+                              final minPoints = context.read<InventoryProvider>().settings.effectiveMinPointsForRedemption;
+                              final eligible = customer.points >= minPoints;
+                              return IconButton(
+                                icon: Icon(Icons.card_giftcard, color: eligible ? Colors.orange : Colors.grey, size: 18),
+                                tooltip: eligible ? 'Redeem points' : 'Needs at least $minPoints points to redeem',
+                                onPressed: () {
+                                  if (!eligible) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('${customer.name} needs at least $minPoints points to redeem (has ${customer.points}).')),
+                                    );
+                                    return;
+                                  }
+                                  _showRedeemDialog(context, customer.points);
+                                },
+                              );
                             },
                           ),
                       ],

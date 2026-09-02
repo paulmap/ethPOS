@@ -31,6 +31,10 @@ class _EditProductPageState extends State<EditProductPage> {
   late TextEditingController _reorderLevelController;
   late TextEditingController _costPriceController;
   late TextEditingController _markupController;
+  late TextEditingController _storeAreaController;
+  late TextEditingController _aisleController;
+  late TextEditingController _binShelfController;
+  late TextEditingController _compatibleTagsController;
 
   final List<String> _currencies = ['USD', 'ZWL', 'ZAR', 'BP'];
 
@@ -50,6 +54,10 @@ class _EditProductPageState extends State<EditProductPage> {
     _reorderLevelController = TextEditingController(text: widget.product?.reorderLevel?.toString() ?? '5');
     _costPriceController = TextEditingController(text: widget.product?.costPrice?.toString() ?? '0.0');
     _markupController = TextEditingController(text: widget.product?.markup?.toString() ?? '0.0');
+    _storeAreaController = TextEditingController(text: widget.product?.storeArea ?? '');
+    _aisleController = TextEditingController(text: widget.product?.aisle ?? '');
+    _binShelfController = TextEditingController(text: widget.product?.binShelf ?? '');
+    _compatibleTagsController = TextEditingController(text: widget.product?.compatibleTags?.join(', ') ?? '');
   }
 
   @override
@@ -66,7 +74,18 @@ class _EditProductPageState extends State<EditProductPage> {
     _reorderLevelController.dispose();
     _costPriceController.dispose();
     _markupController.dispose();
+    _storeAreaController.dispose();
+    _aisleController.dispose();
+    _binShelfController.dispose();
+    _compatibleTagsController.dispose();
     super.dispose();
+  }
+
+  String? _emptyToNull(String text) => text.isEmpty ? null : text;
+
+  List<String>? _parseTags(String text) {
+    final tags = text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+    return tags.isEmpty ? null : tags;
   }
 
   void _save() async {
@@ -88,6 +107,10 @@ class _EditProductPageState extends State<EditProductPage> {
         reorderLevel: int.tryParse(_reorderLevelController.text),
         costPrice: double.tryParse(_costPriceController.text),
         markup: double.tryParse(_markupController.text),
+        storeArea: isEditing ? widget.product!.storeArea : _emptyToNull(_storeAreaController.text),
+        aisle: isEditing ? widget.product!.aisle : _emptyToNull(_aisleController.text),
+        binShelf: isEditing ? widget.product!.binShelf : _emptyToNull(_binShelfController.text),
+        compatibleTags: _parseTags(_compatibleTagsController.text),
         currency: _selectedCurrency,
         lastUpdated: DateTime.now(),
         isDiscontinued: widget.product?.isDiscontinued ?? false,
@@ -167,6 +190,47 @@ class _EditProductPageState extends State<EditProductPage> {
               CustomTextField(
                 label: 'Barcode (Optional)',
                 controller: _barcodeController,
+              ),
+              const SizedBox(height: 16),
+              if (isEditing)
+                CustomTextField(
+                  label: 'Location',
+                  controller: TextEditingController(text: widget.product!.locationCode),
+                  readOnly: true,
+                  helperText: 'Move via Transfer Location (Stock page)',
+                )
+              else ...[
+                const Text('Location (Optional)', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Store/Area',
+                        controller: _storeAreaController,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Aisle',
+                        controller: _aisleController,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: CustomTextField(
+                        label: 'Bin/Shelf',
+                        controller: _binShelfController,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 16),
+              CustomTextField(
+                label: 'Compatibility Tags (Optional — e.g. iPhone 12, iPhone 13)',
+                controller: _compatibleTagsController,
               ),
               const SizedBox(height: 16),
               CustomTextField(

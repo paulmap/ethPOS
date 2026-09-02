@@ -1,0 +1,17 @@
+[Unit]
+Description=ethPOS AI Assistant backend
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User=ethpos-assistant
+Group=ethpos-assistant
+EnvironmentFile=/etc/ethpos-assistant.env
+ExecStart=/opt/ethpos-assistant/ethpos-assistant
+Restart=on-failure
+RestartSec=5
+WorkingDirectory=/var/lib/ethpos-assistant
+
+[Install]
+WantedBy=multi-user.target

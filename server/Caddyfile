@@ -1,0 +1,6 @@
+# Replace with your actual domain/subdomain. Its DNS A record must already
+# point at the VPS's public IP before Caddy first starts, or the automatic
+# Let's Encrypt certificate request will fail.
+assistant.yourdomain.example {
+	reverse_proxy 127.0.0.1:8080
+}

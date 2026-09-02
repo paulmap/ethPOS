@@ -52,6 +52,18 @@ class AppSettings extends HiveObject {
   @HiveField(15, defaultValue: '1234')
   final String? adminPin;
 
+  @HiveField(16, defaultValue: 100)
+  final int? minPointsForRedemption;
+
+  @HiveField(17)
+  final String? assistantBaseUrl;
+
+  @HiveField(18)
+  final String? assistantApiKey;
+
+  @HiveField(19, defaultValue: false)
+  final bool? assistantEnabled;
+
   AppSettings({
     this.baseCurrency = 'USD',
     this.exchangeRates = const {
@@ -74,6 +86,10 @@ class AppSettings extends HiveObject {
     this.receiptTagline = 'Thank you for your business!',
     this.taxCategories = const ['Tax Exempt', 'Standard Rate (15%)', 'Zero Rated'],
     this.adminPin = '1234',
+    this.minPointsForRedemption = 100,
+    this.assistantBaseUrl,
+    this.assistantApiKey,
+    this.assistantEnabled = false,
   });
 
   // Helper getters
@@ -90,6 +106,10 @@ class AppSettings extends HiveObject {
   int get effectivePoStartNumber => poStartNumber ?? 1;
   String get effectiveReceiptTagline => receiptTagline ?? 'Thank you for your business!';
   List<String> get effectiveTaxCategories => taxCategories ?? const ['Tax Exempt', 'Standard Rate (15%)', 'Zero Rated'];
+  int get effectiveMinPointsForRedemption => minPointsForRedemption ?? 100;
+  String get effectiveAssistantBaseUrl => assistantBaseUrl ?? '';
+  String get effectiveAssistantApiKey => assistantApiKey ?? '';
+  bool get effectiveAssistantEnabled => assistantEnabled ?? false;
 
   AppSettings copyWith({
     String? baseCurrency,
@@ -108,6 +128,10 @@ class AppSettings extends HiveObject {
     String? receiptTagline,
     List<String>? taxCategories,
     String? adminPin,
+    int? minPointsForRedemption,
+    String? assistantBaseUrl,
+    String? assistantApiKey,
+    bool? assistantEnabled,
   }) {
     return AppSettings(
       baseCurrency: baseCurrency ?? this.baseCurrency,
@@ -126,6 +150,10 @@ class AppSettings extends HiveObject {
       receiptTagline: receiptTagline ?? this.receiptTagline,
       taxCategories: taxCategories ?? this.taxCategories,
       adminPin: adminPin ?? this.adminPin,
+      minPointsForRedemption: minPointsForRedemption ?? this.minPointsForRedemption,
+      assistantBaseUrl: assistantBaseUrl ?? this.assistantBaseUrl,
+      assistantApiKey: assistantApiKey ?? this.assistantApiKey,
+      assistantEnabled: assistantEnabled ?? this.assistantEnabled,
     );
   }
 }

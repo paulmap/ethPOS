@@ -32,6 +32,10 @@ class LocalProductAdapter extends TypeAdapter<LocalProduct> {
       reorderLevel: fields[14] as int?,
       costPrice: fields[15] as double?,
       markup: fields[16] as double?,
+      storeArea: fields[17] as String?,
+      aisle: fields[18] as String?,
+      binShelf: fields[19] as String?,
+      compatibleTags: (fields[20] as List?)?.cast<String>(),
       currency: fields[6] as String?,
       isDiscontinued: fields[7] as bool?,
     );
@@ -40,7 +44,7 @@ class LocalProductAdapter extends TypeAdapter<LocalProduct> {
   @override
   void write(BinaryWriter writer, LocalProduct obj) {
     writer
-      ..writeByte(17)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -74,7 +78,15 @@ class LocalProductAdapter extends TypeAdapter<LocalProduct> {
       ..writeByte(15)
       ..write(obj.costPrice)
       ..writeByte(16)
-      ..write(obj.markup);
+      ..write(obj.markup)
+      ..writeByte(17)
+      ..write(obj.storeArea)
+      ..writeByte(18)
+      ..write(obj.aisle)
+      ..writeByte(19)
+      ..write(obj.binShelf)
+      ..writeByte(20)
+      ..write(obj.compatibleTags);
   }
 
   @override

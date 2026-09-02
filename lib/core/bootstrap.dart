@@ -20,8 +20,8 @@ import '../features/inventory/presentation/providers/bin_service.dart';
 /// spread [newProviders] into the existing MultiProvider.
 class PosBootstrap {
   static const staff = <Staff>[
-    Staff(id: 'tendai', name: 'Tendai M.', role: StaffRole.assistant, pin: '1234'),
-    Staff(id: 'owner', name: 'Supervisor', role: StaffRole.supervisor, pin: '9012'),
+    Staff(id: 'paul', name: 'Paul M.', role: StaffRole.assistant, pin: '1111'),
+    Staff(id: 'owner', name: 'Supervisor', role: StaffRole.supervisor, pin: '0000'),
   ];
 
   static Future<void> openNewBoxes() async {

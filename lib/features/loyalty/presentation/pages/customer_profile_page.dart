@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/storage/models/local_customer.dart';
+import '../../../inventory/presentation/providers/inventory_provider.dart';
+import '../../../sales/presentation/providers/sales_provider.dart';
+import '../../../sales/presentation/pages/checkout_page.dart';
 import 'add_customer_page.dart';
 import 'customer_history_page.dart';
 
@@ -17,7 +21,13 @@ class CustomerProfilePage extends StatelessWidget {
         foregroundColor: Colors.white,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              context.read<SalesProvider>().selectCustomer(customer.id);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CheckoutPage()),
+              );
+            },
             child: const Text('ADD TO RECEIPT', style: TextStyle(color: Colors.white, fontSize: 12)),
           ),
         ],
@@ -63,7 +73,7 @@ class CustomerProfilePage extends StatelessWidget {
                 ),
               );
             }),
-            _buildActionLink('REDEEM POINTS', () {}),
+            _buildActionLink('REDEEM POINTS', () => _redeemPoints(context)),
             _buildActionLink('GENERATE NFC', () {}),
             _buildActionLink('VIEW PURCHASE HISTORY', () {
               Navigator.push(
@@ -78,6 +88,24 @@ class CustomerProfilePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _redeemPoints(BuildContext context) {
+    final minPoints = context.read<InventoryProvider>().settings.effectiveMinPointsForRedemption;
+    if (customer.points < minPoints) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${customer.name} needs at least $minPoints points to redeem (currently has ${customer.points}).')),
+      );
+      return;
+    }
+    context.read<SalesProvider>().selectCustomer(customer.id);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Customer added. Redeem points from the checkout screen.')),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CheckoutPage()),
     );
   }
 

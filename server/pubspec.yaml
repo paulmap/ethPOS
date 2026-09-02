@@ -1,0 +1,16 @@
+name: ethpos_assistant_server
+description: Self-hosted AI query backend for ethPOS (product availability/location/price assistant), backed by a local Ollama instance.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  shelf: ^1.4.2
+  shelf_router: ^1.1.4
+  http: ^1.2.2
+
+dev_dependencies:
+  test: ^1.25.8
+  lints: ^5.0.0

@@ -6,6 +6,7 @@ import '../../../features/sales/presentation/pages/checkout_page.dart';
 import '../../../features/suppliers/presentation/pages/supplier_home.dart';
 import '../../../features/purchases/presentation/pages/purchase_home.dart';
 import '../../../features/settings/presentation/pages/settings_page.dart';
+import '../../../features/assistant/presentation/pages/assistant_chat_page.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -138,10 +139,16 @@ class DashboardPage extends StatelessWidget {
                         () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PurchaseHome())),
                       ),
                       _buildDashboardItem(
-                        context, 
-                        Icons.settings_suggest_rounded, 
-                        'Settings', 
+                        context,
+                        Icons.settings_suggest_rounded,
+                        'Settings',
                         () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsPage())),
+                      ),
+                      _buildDashboardItem(
+                        context,
+                        Icons.smart_toy_rounded,
+                        'AI\nAssistant',
+                        () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AssistantChatPage())),
                       ),
                     ],
                   ),

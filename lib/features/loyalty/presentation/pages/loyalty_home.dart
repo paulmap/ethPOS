@@ -4,8 +4,15 @@ import '../providers/loyalty_provider.dart';
 import 'add_customer_page.dart';
 import 'customer_profile_page.dart';
 
-class LoyaltyHome extends StatelessWidget {
+class LoyaltyHome extends StatefulWidget {
   const LoyaltyHome({super.key});
+
+  @override
+  State<LoyaltyHome> createState() => _LoyaltyHomeState();
+}
+
+class _LoyaltyHomeState extends State<LoyaltyHome> {
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +33,11 @@ class LoyaltyHome extends StatelessWidget {
       ),
       body: Consumer<LoyaltyProvider>(
         builder: (context, provider, child) {
-          final customers = provider.customers;
-          
-          if (customers.isEmpty) {
+          if (provider.customers.isEmpty) {
             return const Center(child: Text('No customers registered yet.'));
           }
+
+          final customers = provider.searchCustomers(_searchQuery);
 
           return Column(
             children: [
@@ -42,46 +49,47 @@ class LoyaltyHome extends StatelessWidget {
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(),
                   ),
-                  onChanged: (value) {
-                    // Search logic handled by provider or local state
-                  },
+                  onChanged: (value) => setState(() => _searchQuery = value),
                 ),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: customers.length,
-                  itemBuilder: (context, index) {
-                    final customer = customers[index];
-                    return ListTile(
-                      leading: const CircleAvatar(child: Icon(Icons.person)),
-                      title: Text(customer.name),
-                      subtitle: Text(customer.maskedPhoneNumber),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${customer.points} pts',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                              fontSize: 16,
+              if (customers.isEmpty)
+                const Expanded(child: Center(child: Text('No customers match your search.')))
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: customers.length,
+                    itemBuilder: (context, index) {
+                      final customer = customers[index];
+                      return ListTile(
+                        leading: const CircleAvatar(child: Icon(Icons.person)),
+                        title: Text(customer.name),
+                        subtitle: Text(customer.maskedPhoneNumber),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${customer.points} pts',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                                fontSize: 16,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CustomerProfilePage(customer: customer),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CustomerProfilePage(customer: customer),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           );
         },

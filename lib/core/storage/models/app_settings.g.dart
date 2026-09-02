@@ -35,13 +35,17 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
           : fields[13] as String?,
       taxCategories: (fields[14] as List?)?.cast<String>(),
       adminPin: fields[15] == null ? '1234' : fields[15] as String?,
+      minPointsForRedemption: fields[16] == null ? 100 : fields[16] as int?,
+      assistantBaseUrl: fields[17] as String?,
+      assistantApiKey: fields[18] as String?,
+      assistantEnabled: fields[19] == null ? false : fields[19] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AppSettings obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(20)
       ..writeByte(0)
       ..write(obj.baseCurrency)
       ..writeByte(1)
@@ -73,7 +77,15 @@ class AppSettingsAdapter extends TypeAdapter<AppSettings> {
       ..writeByte(14)
       ..write(obj.taxCategories)
       ..writeByte(15)
-      ..write(obj.adminPin);
+      ..write(obj.adminPin)
+      ..writeByte(16)
+      ..write(obj.minPointsForRedemption)
+      ..writeByte(17)
+      ..write(obj.assistantBaseUrl)
+      ..writeByte(18)
+      ..write(obj.assistantApiKey)
+      ..writeByte(19)
+      ..write(obj.assistantEnabled);
   }
 
   @override

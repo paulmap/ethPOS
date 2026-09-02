@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../inventory/presentation/providers/inventory_provider.dart';
@@ -29,6 +31,12 @@ class _SettingsPageState extends State<SettingsPage> {
   late TextEditingController _taglineController;
   late List<String> _taxCategories;
   final TextEditingController _newTaxCategoryController = TextEditingController();
+  late TextEditingController _minPointsForRedemptionController;
+
+  // AI Assistant
+  late TextEditingController _assistantBaseUrlController;
+  late TextEditingController _assistantApiKeyController;
+  late bool _assistantEnabled;
 
   @override
   void initState() {
@@ -49,6 +57,10 @@ class _SettingsPageState extends State<SettingsPage> {
     
     _taglineController = TextEditingController(text: settings.effectiveReceiptTagline);
     _taxCategories = List.from(settings.effectiveTaxCategories);
+    _minPointsForRedemptionController = TextEditingController(text: settings.effectiveMinPointsForRedemption.toString());
+    _assistantBaseUrlController = TextEditingController(text: settings.effectiveAssistantBaseUrl);
+    _assistantApiKeyController = TextEditingController(text: settings.effectiveAssistantApiKey);
+    _assistantEnabled = settings.effectiveAssistantEnabled;
   }
 
   @override
@@ -66,6 +78,9 @@ class _SettingsPageState extends State<SettingsPage> {
     _poStartController.dispose();
     _taglineController.dispose();
     _newTaxCategoryController.dispose();
+    _minPointsForRedemptionController.dispose();
+    _assistantBaseUrlController.dispose();
+    _assistantApiKeyController.dispose();
     super.dispose();
   }
 
@@ -86,12 +101,21 @@ class _SettingsPageState extends State<SettingsPage> {
         poStartNumber: int.tryParse(_poStartController.text) ?? 1,
         receiptTagline: _taglineController.text,
         taxCategories: _taxCategories,
+        minPointsForRedemption: int.tryParse(_minPointsForRedemptionController.text) ?? 100,
+        assistantBaseUrl: _assistantBaseUrlController.text,
+        assistantApiKey: _assistantApiKeyController.text,
+        assistantEnabled: _assistantEnabled,
       );
       provider.updateSettings(updatedSettings);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Settings saved successfully')),
       );
     }
+  }
+
+  void _generateApiKey() {
+    final bytes = List<int>.generate(32, (_) => Random.secure().nextInt(256));
+    setState(() => _assistantApiKeyController.text = base64Url.encode(bytes));
   }
 
   @override
@@ -198,6 +222,44 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
               
+              const SizedBox(height: 20),
+              _buildSectionHeader('Loyalty Program'),
+              const SizedBox(height: 10),
+              _buildTextField(
+                'Minimum Points to Redeem',
+                _minPointsForRedemptionController,
+                Icons.card_giftcard,
+                keyboardType: TextInputType.number,
+              ),
+
+              const SizedBox(height: 20),
+              _buildSectionHeader('AI Assistant'),
+              const SizedBox(height: 10),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Enable AI Assistant'),
+                subtitle: const Text('Requires a self-hosted backend URL and API key'),
+                value: _assistantEnabled,
+                onChanged: (v) => setState(() => _assistantEnabled = v),
+              ),
+              _buildTextField(
+                'Backend URL',
+                _assistantBaseUrlController,
+                Icons.dns,
+                keyboardType: TextInputType.url,
+                required: false,
+              ),
+              _buildTextField(
+                'API Key',
+                _assistantApiKeyController,
+                Icons.vpn_key,
+                required: false,
+                suffixIcon: TextButton(
+                  onPressed: _generateApiKey,
+                  child: const Text('Generate'),
+                ),
+              ),
+
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
@@ -223,7 +285,14 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {TextInputType? keyboardType}) {
+  Widget _buildTextField(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    TextInputType? keyboardType,
+    bool required = true,
+    Widget? suffixIcon,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -231,10 +300,11 @@ class _SettingsPageState extends State<SettingsPage> {
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon),
+          suffixIcon: suffixIcon,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
         keyboardType: keyboardType,
-        validator: (value) => value == null || value.isEmpty ? 'Field cannot be empty' : null,
+        validator: required ? (value) => value == null || value.isEmpty ? 'Field cannot be empty' : null : null,
       ),
     );
   }

@@ -20,6 +20,15 @@ class _NewProductPageState extends State<NewProductPage> {
   final _categoryController = TextEditingController();
   final _upcController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _storeAreaController = TextEditingController();
+  final _aisleController = TextEditingController();
+  final _binShelfController = TextEditingController();
+  final _compatibleTagsController = TextEditingController();
+
+  List<String>? _parseTags(String text) {
+    final tags = text.split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+    return tags.isEmpty ? null : tags;
+  }
 
   Future<void> _scanBarcode() async {
     await Navigator.push(
@@ -47,6 +56,10 @@ class _NewProductPageState extends State<NewProductPage> {
         price: 0.0,
         currentStock: 0,
         barcode: _upcController.text.isNotEmpty ? _upcController.text : _productCodeController.text,
+        storeArea: _storeAreaController.text.isEmpty ? null : _storeAreaController.text,
+        aisle: _aisleController.text.isEmpty ? null : _aisleController.text,
+        binShelf: _binShelfController.text.isEmpty ? null : _binShelfController.text,
+        compatibleTags: _parseTags(_compatibleTagsController.text),
         lastUpdated: DateTime.now(),
       );
       
@@ -83,6 +96,28 @@ class _NewProductPageState extends State<NewProductPage> {
                 ),
               ),
               _buildTextField('Long Description (Optional)', _descriptionController, Icons.info_outline, maxLines: 3),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text('Location (Optional)', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(child: _buildTextField('Store/Area', _storeAreaController, Icons.store, required: false)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildTextField('Aisle', _aisleController, Icons.signpost, required: false)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildTextField('Bin/Shelf', _binShelfController, Icons.inbox, required: false)),
+                ],
+              ),
+              _buildTextField(
+                'Compatibility Tags (Optional — e.g. iPhone 12, iPhone 13)',
+                _compatibleTagsController,
+                Icons.link,
+                required: false,
+              ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -99,7 +134,7 @@ class _NewProductPageState extends State<NewProductPage> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {int maxLines = 1, Widget? suffixIcon}) {
+  Widget _buildTextField(String label, TextEditingController controller, IconData icon, {int maxLines = 1, Widget? suffixIcon, bool required = true}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -111,7 +146,7 @@ class _NewProductPageState extends State<NewProductPage> {
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        validator: (value) => value == null || value.isEmpty ? 'Field required' : null,
+        validator: required ? (value) => value == null || value.isEmpty ? 'Field required' : null : null,
       ),
     );
   }

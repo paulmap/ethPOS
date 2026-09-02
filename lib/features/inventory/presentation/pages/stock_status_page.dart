@@ -28,7 +28,7 @@ class StockStatusPage extends StatelessWidget {
               return Card(
                 child: ListTile(
                   title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('SKU: ${p.effectiveSku} | Code: ${p.effectiveProductCode}'),
+                  subtitle: Text('SKU: ${p.effectiveSku} | Code: ${p.effectiveProductCode} | Loc: ${p.locationCode}'),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => EditProductPage(product: p)),
@@ -59,12 +59,15 @@ class StockStatusPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(builder: (_) => EditProductPage(product: p)),
                             );
+                          } else if (value == 'transfer') {
+                            _showTransferDialog(context, provider, p);
                           } else if (value == 'discontinue') {
                             _confirmDiscontinue(context, provider, p);
                           }
                         },
                         itemBuilder: (context) => const [
                           PopupMenuItem(value: 'edit', child: Text('Edit')),
+                          PopupMenuItem(value: 'transfer', child: Text('Transfer Location')),
                           PopupMenuItem(value: 'discontinue', child: Text('Discontinue')),
                         ],
                       ),
@@ -75,6 +78,64 @@ class StockStatusPage extends StatelessWidget {
             },
           );
         },
+      ),
+    );
+  }
+
+  void _showTransferDialog(BuildContext context, InventoryProvider provider, LocalProduct product) {
+    final storeAreaController = TextEditingController(text: product.storeArea);
+    final aisleController = TextEditingController(text: product.aisle);
+    final binShelfController = TextEditingController(text: product.binShelf);
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Transfer Location: ${product.name}'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Current: ${product.locationCode}', style: const TextStyle(color: Colors.grey)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: storeAreaController,
+                decoration: const InputDecoration(labelText: 'Store/Area', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: aisleController,
+                decoration: const InputDecoration(labelText: 'Aisle', border: OutlineInputBorder()),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: binShelfController,
+                decoration: const InputDecoration(labelText: 'Bin/Shelf', border: OutlineInputBorder()),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              // Note: copyWith falls back to the old value on null, so pass
+              // empty strings (not null) here to allow clearing a segment —
+              // locationCode already filters out empty segments for display.
+              final updated = product.copyWith(
+                storeArea: storeAreaController.text,
+                aisle: aisleController.text,
+                binShelf: binShelfController.text,
+                lastUpdated: DateTime.now(),
+              );
+              provider.updateProduct(updated);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${product.name} moved to ${updated.locationCode}')),
+              );
+            },
+            child: const Text('Move'),
+          ),
+        ],
       ),
     );
   }
