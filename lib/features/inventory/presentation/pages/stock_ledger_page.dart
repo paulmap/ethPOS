@@ -186,7 +186,6 @@ class _LedgerRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: low ? AppColors.warningTint : null,
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
         decoration: BoxDecoration(
           border: const Border(top: BorderSide(color: AppColors.divider)),
