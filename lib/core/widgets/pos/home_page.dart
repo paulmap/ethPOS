@@ -180,7 +180,7 @@ class _Tile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Icon(icon, size: 19),
+          Icon(icon, size: 19, color: AppColors.ink),
           Text(
             label,
             maxLines: 2,
@@ -189,6 +189,7 @@ class _Tile extends StatelessWidget {
               fontSize: 14,
               fontWeight: FontWeight.w500,
               height: 1.2,
+              color: AppColors.ink,
             ),
           ),
         ],
